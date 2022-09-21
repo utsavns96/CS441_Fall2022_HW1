@@ -2,8 +2,8 @@ name := "LogFileGenerator"
 
 version := "0.1"
 
-//scalaVersion := "3.0.2"
-scalaVersion := "3.1.3"
+scalaVersion := "3.0.2"
+//scalaVersion := "3.1.3"
 
 val logbackVersion = "1.3.0-alpha10"
 val sfl4sVersion = "2.0.0-alpha5"
