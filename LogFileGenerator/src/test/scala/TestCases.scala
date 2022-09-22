@@ -2,6 +2,8 @@ import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest.funsuite.AnyFunSuite
 
 import java.util.regex.Pattern
+import com.typesafe.config.{Config, ConfigFactory}
+import scala.runtime.stdLibPatches.Predef.assert
 
 object TestCases
   class TestCase extends AnyFunSuite:

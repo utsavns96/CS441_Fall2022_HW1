@@ -27,6 +27,6 @@ libraryDependencies ++= Seq(
   "com.github.mifmif" % "generex" % generexVersion,
   "org.apache.hadoop" % "hadoop-common" % "3.3.4",
   "org.apache.hadoop" % "hadoop-mapreduce-client-core" % "3.3.4",
-  "org.apache.hadoop" % "hadoop-mapreduce-client-jobclient" % "3.3.4"
+  "org.apache.hadoop" % "hadoop-mapreduce-client-jobclient" % "3.3.4",
   "org.scalatest" %% "scalatest" % "3.2.11" % Test
 )
