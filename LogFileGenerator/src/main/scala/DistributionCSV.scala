@@ -1,4 +1,4 @@
-import HelperUtils.CreateLogger
+import HelperUtils.{CreateLogger, ExtensionRenamer}
 import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.conf.*
@@ -36,23 +36,27 @@ object DistributionCSV:
       if(injectedpattern.find() && userdefinedpattern.find())
       {
         logger.info(s"Found a string satisfying our regex constrains")
-        //val loglevel = userdefinedpattern.group()
-        //value.toString.substring(3,5) gives us the first digit of the minute of the log message.
+        //using variables otherwise this bit of code is very difficult to read.
+        //value.toString.substring(3,5) gives us the minute of the log message.
         val minute = value.toString.substring(3, 5).toInt
+        //fetching the specified interval from the config file.
         val timeinterval: Int = funcconfig.getInt("TimeInterval")
-        val firstdigofmin: Int = (value.toString.substring(3, 5)).toInt-(minute % timeinterval)
-        val firstdigplustimeint: Int = firstdigofmin + timeinterval
+        val lowerboundinterval: Int = (value.toString.substring(3, 5)).toInt-(minute % timeinterval)
+        val upperboundinterval: Int = lowerboundinterval + timeinterval
+        //if we are at a time interval, the key is simply that time interval
         if((minute % timeinterval).equals(0)){
+          logger.info(s"Found a string with time matching our interval: " + value.toString.substring(0, 5))
           word.set(value.toString.substring(0, 5) + ":00 " + userdefinedpattern.group())
-        }
-        else if (minute > firstdigofmin && minute < firstdigplustimeint)//if (minute mod timeinterval)
-        //if (value.toString.substring(3, 5).toInt >= (value.toString.substring(3, 4) + 0).toInt && value.toString.substring(3, 5).toInt < ((value.toString.substring(3, 4) + 0).toInt + timeinterval))
+        }//else if the minute is between time intervals, we set key to the lower time interval
+        else if (minute > lowerboundinterval && minute < upperboundinterval)//below is the if condition without variables. Not very pretty.
+          logger.info(s"Found a string between intervals: " + value.toString.substring(0, 5))
+        //if (value.toString.substring(3, 5).toInt >= (value.toString.substring(3, 4) + 0).toInt && value.toString.substring(3, 5).toInt < ((value.toString.substring(3, 4) + 0).toInt + funcconfig.getInt("TimeInterval")))
           //group() method gives us the input subsequence matched by the above matcher()
-          //word.set(value.toString.substring(0, 4)+timeinterval + ":00 " + userdefinedpattern.group())
           word.set(value.toString.substring(0, 3)+(value.toString.substring(3, 5).toInt-(minute % timeinterval)) + ":00 " + userdefinedpattern.group())
-        else
-          //word.set(value.toString.substring(0, 2) + ":" + ((value.toString.substring(3, 4) + 0).toInt + timeinterval) + ":00 " + userdefinedpattern.group())
-          word.set(value.toString.substring(0, 2) + ":" + firstdigplustimeint + ":00 " + userdefinedpattern.group())
+        else//else we set the key to the higher time interval.
+          logger.info(s"Found a string higher than the intervals: " + value.toString.substring(0, 5))
+          //word.set(value.toString.substring(0, 2) + ":" + ((value.toString.substring(3, 4) + 0).toInt + funcconfig.getInt("TimeInterval")) + ":00 " + userdefinedpattern.group())
+          word.set(value.toString.substring(0, 2) + ":" + upperboundinterval + ":00 " + userdefinedpattern.group())
         output.collect(word, one)
       }
 
@@ -63,7 +67,8 @@ object DistributionCSV:
       logger.info(s"The sum for time interval and log message type= "+ sum)
       output.collect(key, new IntWritable(sum))
 
-  @main def runMapRed(inputPath: String, outputPath: String) =
+  /*@main*/ 
+  def runMapRed(inputPath: String, outputPath: String) =
     logger.info(s"Starting the main implementation runMapRed for DistributionCSV")
     require(!inputPath.isEmpty && !outputPath.isEmpty)
     println(inputPath)
@@ -84,6 +89,9 @@ object DistributionCSV:
     //Creating a new time format to append to our output directory
     var timeformat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss")
     //Saves the trouble of having to delete the output directory again and again
-    FileOutputFormat.setOutputPath(conf, new Path(outputPath + funcconfig.getString("OutputPath") + "_" + timeformat.format(Calendar.getInstance().getTime)))
+    //specifically using a variable here to then pass it onto changeExt to rename the file.
+    val outpath = outputPath + funcconfig.getString("OutputPath") + "_" + timeformat.format(Calendar.getInstance().getTime)
+    FileOutputFormat.setOutputPath(conf, new Path(outpath))
     logger.info(s"Job configurations set. Starting job." + conf.getJobName)
     JobClient.runJob(conf)
+    ExtensionRenamer.changeExt(outpath,conf.getJobName)

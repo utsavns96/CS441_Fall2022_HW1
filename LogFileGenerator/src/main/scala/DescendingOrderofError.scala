@@ -1,4 +1,4 @@
-import HelperUtils.CreateLogger
+import HelperUtils.{CreateLogger, ExtensionRenamer}
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -103,8 +103,8 @@ object DescendingOrderofError:
       )
     }
 
-
-  @main def runDescOrder(inputPath: String, outputPath: String) =
+  //@main
+  def runDescOrder(inputPath: String, outputPath: String) =
     logger.info(s"Starting the main implementation runLongestString for LongestString")
     require(!inputPath.isEmpty && !outputPath.isEmpty)
     println(inputPath)
@@ -156,6 +156,7 @@ object DescendingOrderofError:
     FileOutputFormat.setOutputPath(conf2, new Path(outpath + "\\finaloutput"))
     logger.info(s"Job configurations set. Starting job." + conf2.getJobName)
     JobClient.runJob(conf2)
-
+    ExtensionRenamer.changeExt(outpath+"\\unsortedoutput",conf.getJobName)
+    ExtensionRenamer.changeExt(outpath+"\\finaloutput",conf2.getJobName)
 
 

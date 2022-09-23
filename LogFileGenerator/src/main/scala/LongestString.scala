@@ -1,4 +1,5 @@
-import HelperUtils.CreateLogger
+import HelperUtils.{CreateLogger, ExtensionRenamer}
+
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import com.typesafe.config.{Config, ConfigFactory}
@@ -30,7 +31,6 @@ import scala.jdk.CollectionConverters.*
         //Then we use matcher() to match the input value against the regex pattern.
         val injectedpattern = Pattern.compile(config.getString("randomLogGenerator.Pattern")).matcher(value.toString)
         val userdefinedpattern = Pattern.compile(funcconfig.getString("FindOccurrenceOf")).matcher(value.toString)
-        //val timeinterval = value.toString.substring(0,5)
         //val matchinjected = injectedpattern.matcher(value.toString)
         //val matcheduserdefined = userdefinedpattern.matcher(value.toString)
         //If we find a string that satisfies the injected regex and is of the format we need (INFO/WARN/DEBUG/ERROR), we proceed to add it to our map output.
@@ -49,8 +49,8 @@ import scala.jdk.CollectionConverters.*
         val longest = values.asScala.max
         logger.info(s"The longest string for= "+ key +" is of length "+ longest)
         output.collect(key, longest)
-
-    @main def runLongestString(inputPath: String, outputPath: String) =
+    //@main 
+    def runLongestString(inputPath: String, outputPath: String) =
       logger.info(s"Starting the main implementation runLongestString for LongestString")
       require(!inputPath.isEmpty && !outputPath.isEmpty)
       println(inputPath)
@@ -72,7 +72,10 @@ import scala.jdk.CollectionConverters.*
       //Creating a new time format to append to our output directory
       var timeformat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss")
       //Saves the trouble of having to delete the output directory again and again
-      FileOutputFormat.setOutputPath(conf, new Path(outputPath + funcconfig.getString("OutputPath")+"_"+timeformat.format(Calendar.getInstance().getTime)))
+      //specifically using a variable here to then pass it onto changeExt to rename the file.
+      val outpath = outputPath + funcconfig.getString("OutputPath") + "_" + timeformat.format(Calendar.getInstance().getTime)
+      FileOutputFormat.setOutputPath(conf, new Path(outpath))
       logger.info(s"Job configurations set. Starting job." + conf.getJobName)
       JobClient.runJob(conf)
+      ExtensionRenamer.changeExt(outpath,conf.getJobName)
 
