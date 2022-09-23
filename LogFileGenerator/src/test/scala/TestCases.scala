@@ -23,7 +23,7 @@ object TestCases
     }
 
     test("Unit test for user defined regex positive") {
-      //check if we are matching our user defined pattern correctly
+      //check if we are matching our user defined pattern correctly. It should match in this case.
       val config: Config = ConfigFactory.load("application.conf")
       val funcconfig = config.getConfig("randomLogGenerator.functionalityconfigs.longeststring")
       val value="14:35:50.652 [scala-execution-context-global-21] ERROR HelperUtils.Parameters$ - P#~\"PoX@Oc+f!&Q4h3TM:ioE(+B(\"\"`*3U2y;2~[hQL1Js{Iez<(A&CP"
@@ -32,7 +32,7 @@ object TestCases
     }
 
     test("Unit test for user defined regex negative") {
-      //check if we are matching our user defined pattern correctly
+      //check if we are matching our user defined pattern correctly. It should not match in this case.
       val config: Config = ConfigFactory.load("application.conf")
       val funcconfig = config.getConfig("randomLogGenerator.functionalityconfigs.longeststring")
       val value = "@org.apache.hadoop.metrics2.annotation.Metric(sampleName=Ops, always=false, valueName=Time, about=, interval=10, type=DEFAULT, value=[])"

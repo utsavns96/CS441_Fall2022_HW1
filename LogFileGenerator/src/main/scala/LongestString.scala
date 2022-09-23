@@ -1,20 +1,19 @@
 import HelperUtils.CreateLogger
-
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import com.typesafe.config.{Config, ConfigFactory}
+import org.apache.hadoop.fs.Path
+import org.apache.hadoop.conf.*
+import org.apache.hadoop.io.*
+import org.apache.hadoop.util.*
+import org.apache.hadoop.mapred.*
 
+import java.io.IOException
+import java.util
+import java.util.regex.Pattern
+import scala.jdk.CollectionConverters.*
 object DescendingOrder {
-  import com.typesafe.config.{Config, ConfigFactory}
-  import org.apache.hadoop.fs.Path
-  import org.apache.hadoop.conf.*
-  import org.apache.hadoop.io.*
-  import org.apache.hadoop.util.*
-  import org.apache.hadoop.mapred.*
 
-  import java.io.IOException
-  import java.util
-  import java.util.regex.Pattern
-  import scala.jdk.CollectionConverters.*
   //This is the implementation for Functionality 4
   object LongestString:
     val logger = CreateLogger(classOf[DistributionCSV.type])
@@ -73,7 +72,7 @@ object DescendingOrder {
       conf.set("mapred.textoutputformat.separatorText", ",")
       FileInputFormat.setInputPaths(conf, new Path(inputPath))
       //Creating a new time format to append to our output directory
-      var timeformat = new SimpleDateFormat("dd-MM-yyyy-hh-mm")
+      var timeformat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss")
       //Saves the trouble of having to delete the output directory again and again
       FileOutputFormat.setOutputPath(conf, new Path(outputPath + funcconfig.getString("OutputPath")+"_"+timeformat.format(Calendar.getInstance().getTime)))
       logger.info(s"Job configurations set. Starting job." + conf.getJobName)

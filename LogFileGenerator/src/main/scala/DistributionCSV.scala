@@ -71,7 +71,7 @@ object DistributionCSV:
     conf.set("mapred.textoutputformat.separatorText", ",")
     FileInputFormat.setInputPaths(conf, new Path(inputPath))
     //Creating a new time format to append to our output directory
-    var timeformat = new SimpleDateFormat("dd-MM-yyyy-hh-mm")
+    var timeformat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss")
     //Saves the trouble of having to delete the output directory again and again
     FileOutputFormat.setOutputPath(conf, new Path(outputPath + funcconfig.getString("OutputPath") + "_" + timeformat.format(Calendar.getInstance().getTime)))
     logger.info(s"Job configurations set. Starting job." + conf.getJobName)
