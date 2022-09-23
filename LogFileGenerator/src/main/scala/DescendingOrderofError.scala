@@ -18,7 +18,7 @@ import org.apache.hadoop.mapred.jobcontrol.{Job, JobControl}
 
 import scala.language.postfixOps
 
-object DescendingOrderofError {
+object DescendingOrderofError:
   val logger = CreateLogger(classOf[DistributionCSV.type])
   logger.info(s"Starting LongestString - loading configs")
   //Loading the configuration files so that we can fetch the regex that have been set in the .conf file
@@ -54,25 +54,26 @@ object DescendingOrderofError {
         output.collect(word, one)
       }
 
-  class SortMap extends MapReduceBase with Mapper[LongWritable, Text, IntWritable,Text] :
-    private val word = new Text()
-    private val mapcount = new IntWritable()
+  class SortMap extends MapReduceBase with Mapper[LongWritable, Text, IntWritable, Text] :
+    //private val word = new Text()
+    //private val mapcount = new IntWritable()
 
-    def map(key: LongWritable, value: Text, output: OutputCollector[IntWritable, Text], reporter: Reporter): Unit ={
-      println("Starting SortMap")
-      println("Full input= "+value.toString)
-      val line: Array[String] = value.toString.split("\t")
+    def map(key: LongWritable, value: Text, output: OutputCollector[IntWritable, Text], reporter: Reporter): Unit = {
+      logger.info(s"Running the mapper for sorting the output")
+      //println("Starting SortMap")
+      //println("Full input= " + value.toString)
+      val line: Array[String] = value.toString.split(",")
       //now we have key as line[0] and value as line[1]
       //We are going to take advantage of the fact that Map sorts the keys in ascending order before passing to the reducer.
       //Step 1 is to reverse the order of key and value, so that mapper sorts on the count of entries for the time interval
       //Step 2 is to multiply the old value by -1, so that the mapper arranges them in ascending order - larger negative numbers are smaller so they will come on top
       //We will revert this multiplication in the reducer.
-      println("SortMapKey= "+line(0) + "\nSortMapVal="+line(1).toInt)
-      word.set(line(0))
-      println("Word has been set ="+word+" "+word.getClass.getName)
-      mapcount.set((-1*line(1).toInt))
-      println("mapcount has been set ="+mapcount+" "+mapcount.getClass.getName)
-      output.collect( mapcount , word)
+      //println("SortMapKey= " + line(0) + "\nSortMapVal=" + line(1).toInt)
+      //word.set(line(0))
+      //println("Word has been set =" + word + " " + word.getClass.getName)
+      //mapcount.set((-1 * line(1).toInt))
+      //println("mapcount has been set =" + mapcount + " " + mapcount.getClass.getName)
+      output.collect(new IntWritable(-1 * line(1).toInt), new Text(line(0)))
     }
 
 
@@ -85,22 +86,20 @@ object DescendingOrderofError {
       output.collect(key, new IntWritable(sum))
 
   class SortReduce extends MapReduceBase with Reducer[IntWritable, Text, Text, IntWritable] :
-    private val word = new Text()
-    private val mapcount = new IntWritable()
+   // private val word = new Text()
+    //private val mapcount = new IntWritable()
     def reduce(key: IntWritable, values: util.Iterator[Text], output: OutputCollector[Text, IntWritable], reporter: Reporter): Unit ={
+      logger.info(s"Running the reducer for sorting the output")
       //println("SortReduceKey= "+)
-      println("Starting SortReduce")
-      println("Full input= "+key)
-      mapcount.set((-1*(key.toString.toInt)))
+     // println("Starting SortReduce")
+     // println("Full input= "+key)
+      //mapcount.set(-1*key.toString.toInt)
       values.asScala.foreach(token =>
-        println("Token= "+token)
-        word.set(token)
-        //mapcount.set((-1*(token.toString.toInt)).toString)
-        println("Word has been set ="+word+" "+word.getClass.getName)
-        //mapcount.set((-1*key.toString.toInt).toString)
-        //mapcount.set(values.asScala.toString)
-        println("mapcount has been set ="+mapcount+" "+mapcount.getClass.getName)
-        output.collect(token, mapcount)
+       // println("Token= "+token)
+       // word.set(token)
+       // println("Word has been set ="+word+" "+word.getClass.getName)
+       // println("mapcount has been set ="+mapcount+" "+mapcount.getClass.getName)
+        output.collect(token, new IntWritable(-1*key.toString.toInt))
       )
     }
 
@@ -121,7 +120,7 @@ object DescendingOrderofError {
     conf.setCombinerClass(classOf[Reduce])
     conf.setReducerClass(classOf[Reduce])
     conf.setInputFormat(classOf[TextInputFormat])
-    conf.set("mapred.textoutputformat.separatorText", ",")
+    conf.set("mapred.textoutputformat.separator", ",")
     conf.setOutputFormat(classOf[TextOutputFormat[Text, IntWritable]])
     FileInputFormat.setInputPaths(conf, new Path(inputPath))
     //Creating a new time format to append to our output directory
@@ -133,9 +132,7 @@ object DescendingOrderofError {
     FileOutputFormat.setOutputPath(conf, new Path(outpath + "\\unsortedoutput"))
     logger.info(s"Job configurations set. Starting job." + conf.getJobName)
     JobClient.runJob(conf)
-//    val job1: Job = new Job(conf)
-//    val jobcontrol: JobControl = new JobControl("jobctrl")
-//    jobcontrol.addJob(job1)
+
 
     logger.info(s"The main job:" + conf.getJobName + " has ended successfully.")
     val conf2 = new JobConf(this.getClass)
@@ -159,14 +156,6 @@ object DescendingOrderofError {
     FileOutputFormat.setOutputPath(conf2, new Path(outpath + "\\finaloutput"))
     logger.info(s"Job configurations set. Starting job." + conf2.getJobName)
     JobClient.runJob(conf2)
-//    val job2: Job = new Job(conf2)
-//    jobcontrol.addJob(job2)
-//    //JobClient.runJob(conf2)
-//    job2.addDependingJob(job1)
-//    jobcontrol.run()
-//    if(jobcontrol.allFinished()){
-//      logger.info(s"Jobs "+conf.getJobName+" and "+ conf2.getJobName+" completed successfully")
-//      System.exit(0)
-//    }
 
-}
+
+
