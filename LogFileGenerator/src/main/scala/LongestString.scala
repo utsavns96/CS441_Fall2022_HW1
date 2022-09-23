@@ -14,7 +14,7 @@ import java.util.regex.Pattern
 import scala.jdk.CollectionConverters.*
   //This is the implementation for Functionality 4
   object LongestString:
-    val logger = CreateLogger(classOf[DistributionCSV.type])
+    val logger = CreateLogger(classOf[LongestString.type])
     logger.info(s"Starting LongestString - loading configs")
     //Loading the configuration files so that we can fetch the regex that have been set in the .conf file
     val config: Config = ConfigFactory.load("application.conf")

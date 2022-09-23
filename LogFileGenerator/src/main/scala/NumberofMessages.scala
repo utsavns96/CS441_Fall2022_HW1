@@ -14,7 +14,7 @@ import java.util.regex.Pattern
 import scala.jdk.CollectionConverters.*
 //This is the code for functionality 3
 object NumberofMessages :
-  val logger = CreateLogger(classOf[DistributionCSV.type])
+  val logger = CreateLogger(classOf[NumberofMessages.type])
   //Loading the configuration files so that we can fetch the regex that have been set in the .conf file
   logger.info(s"Starting DistributionCSV - loading configs")
   val config: Config = ConfigFactory.load("application.conf")

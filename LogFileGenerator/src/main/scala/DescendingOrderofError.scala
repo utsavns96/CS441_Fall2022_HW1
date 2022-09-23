@@ -19,7 +19,7 @@ import org.apache.hadoop.mapred.jobcontrol.{Job, JobControl}
 import scala.language.postfixOps
 //Thsi is code for functionality 2
 object DescendingOrderofError:
-  val logger = CreateLogger(classOf[DistributionCSV.type])
+  val logger = CreateLogger(classOf[DescendingOrderofError.type])
   logger.info(s"Starting LongestString - loading configs")
   //Loading the configuration files so that we can fetch the regex that have been set in the .conf file
   val config: Config = ConfigFactory.load("application.conf")

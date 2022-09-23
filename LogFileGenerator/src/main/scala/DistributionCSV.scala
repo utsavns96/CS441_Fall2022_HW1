@@ -32,25 +32,23 @@ object DistributionCSV:
       //Then we use matcher() to match the input value against the regex pattern.
       val injectedpattern = Pattern.compile(config.getString("randomLogGenerator.Pattern")).matcher(value.toString)
       val userdefinedpattern = Pattern.compile(funcconfig.getString("FindOccurrenceOf")).matcher(value.toString)
-      //val timeinterval = value.toString.substring(0,5)
-      //val matchinjected = injectedpattern.matcher(value.toString)
-      //val matcheduserdefined = userdefinedpattern.matcher(value.toString)
       //If we find a string that satisfies the injected regex and is of the format we need (INFO/WARN/DEBUG/ERROR), we proceed to add it to our map output.
       if(injectedpattern.find() && userdefinedpattern.find())
       {
         logger.info(s"Found a string satisfying our regex constrains")
         //val loglevel = userdefinedpattern.group()
-        //value.toString.substring(0,5) gives us the timestamp to the minute of the log message, and group() method gives us the input subsequence matched by the above matcher().
+        //value.toString.substring(3,5) gives us the first digit of the minute of the log message.
         val minute = value.toString.substring(3, 5).toInt
-        val timeinterval: Int = 15
+        val timeinterval: Int = funcconfig.getInt("TimeInterval")
         val firstdigofmin: Int = (value.toString.substring(3, 4) + 0).toInt
         val firstdigplustimeint: Int = firstdigofmin + timeinterval
-        if (minute >= firstdigofmin && minute < firstdigplustimeint)
+        if (minute >= firstdigofmin && minute < firstdigplustimeint)//if (minute mod timeinterval)
+        //if (value.toString.substring(3, 5).toInt >= (value.toString.substring(3, 4) + 0).toInt && value.toString.substring(3, 5).toInt < ((value.toString.substring(3, 4) + 0).toInt + timeinterval))
+          //group() method gives us the input subsequence matched by the above matcher()
           word.set(value.toString.substring(0, 4) + "0:00 " + userdefinedpattern.group())
-        //gives us the timestamp to the minute of the log message, and group() method gives us the input subsequence matched by the above matcher().
         else
-          word.set(value.toString.substring(0, 2) + ":" + firstdigplustimeint + ":00 " + userdefinedpattern.group())
-        //word.set(value.toString.substring(0,5) + ":00 " + userdefinedpattern.group())
+          //word.set(value.toString.substring(0, 2) + ":" + ((value.toString.substring(3, 4) + 0).toInt + timeinterval) + ":00 " + userdefinedpattern.group())
+          word.set(value.toString.substring(0, 2) + ":" + ((value.toString.substring(3, 4) + 0).toInt + timeinterval) + ":00 " + userdefinedpattern.group())
         output.collect(word, one)
       }
 
