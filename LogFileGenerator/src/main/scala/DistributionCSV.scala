@@ -40,15 +40,19 @@ object DistributionCSV:
         //value.toString.substring(3,5) gives us the first digit of the minute of the log message.
         val minute = value.toString.substring(3, 5).toInt
         val timeinterval: Int = funcconfig.getInt("TimeInterval")
-        val firstdigofmin: Int = (value.toString.substring(3, 4) + 0).toInt
+        val firstdigofmin: Int = (value.toString.substring(3, 5)).toInt-(minute % timeinterval)
         val firstdigplustimeint: Int = firstdigofmin + timeinterval
-        if (minute >= firstdigofmin && minute < firstdigplustimeint)//if (minute mod timeinterval)
+        if((minute % timeinterval).equals(0)){
+          word.set(value.toString.substring(0, 5) + ":00 " + userdefinedpattern.group())
+        }
+        else if (minute > firstdigofmin && minute < firstdigplustimeint)//if (minute mod timeinterval)
         //if (value.toString.substring(3, 5).toInt >= (value.toString.substring(3, 4) + 0).toInt && value.toString.substring(3, 5).toInt < ((value.toString.substring(3, 4) + 0).toInt + timeinterval))
           //group() method gives us the input subsequence matched by the above matcher()
-          word.set(value.toString.substring(0, 4) + "0:00 " + userdefinedpattern.group())
+          //word.set(value.toString.substring(0, 4)+timeinterval + ":00 " + userdefinedpattern.group())
+          word.set(value.toString.substring(0, 3)+(value.toString.substring(3, 5).toInt-(minute % timeinterval)) + ":00 " + userdefinedpattern.group())
         else
           //word.set(value.toString.substring(0, 2) + ":" + ((value.toString.substring(3, 4) + 0).toInt + timeinterval) + ":00 " + userdefinedpattern.group())
-          word.set(value.toString.substring(0, 2) + ":" + ((value.toString.substring(3, 4) + 0).toInt + timeinterval) + ":00 " + userdefinedpattern.group())
+          word.set(value.toString.substring(0, 2) + ":" + firstdigplustimeint + ":00 " + userdefinedpattern.group())
         output.collect(word, one)
       }
 
