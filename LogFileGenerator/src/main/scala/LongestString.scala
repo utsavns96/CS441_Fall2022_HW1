@@ -12,7 +12,7 @@ import java.io.IOException
 import java.util
 import java.util.regex.Pattern
 import scala.jdk.CollectionConverters.*
-object DescendingOrder {
+object DescendingOrder:
 
   //This is the implementation for Functionality 4
   object LongestString:
@@ -69,7 +69,7 @@ object DescendingOrder {
       conf.setReducerClass(classOf[Reduce])
       conf.setInputFormat(classOf[TextInputFormat])
       conf.setOutputFormat(classOf[TextOutputFormat[Text, IntWritable]])
-      conf.set("mapred.textoutputformat.separatorText", ",")
+      conf.set("mapred.textoutputformat.separator", ",")
       FileInputFormat.setInputPaths(conf, new Path(inputPath))
       //Creating a new time format to append to our output directory
       var timeformat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss")
@@ -78,4 +78,3 @@ object DescendingOrder {
       logger.info(s"Job configurations set. Starting job." + conf.getJobName)
       JobClient.runJob(conf)
 
-}

@@ -68,7 +68,7 @@ object DistributionCSV:
     conf.setReducerClass(classOf[Reduce])
     conf.setInputFormat(classOf[TextInputFormat])
     conf.setOutputFormat(classOf[TextOutputFormat[Text, IntWritable]])
-    conf.set("mapred.textoutputformat.separatorText", ",")
+    conf.set("mapred.textoutputformat.separator", ",")
     FileInputFormat.setInputPaths(conf, new Path(inputPath))
     //Creating a new time format to append to our output directory
     var timeformat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss")
