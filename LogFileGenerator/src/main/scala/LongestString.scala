@@ -12,8 +12,6 @@ import java.io.IOException
 import java.util
 import java.util.regex.Pattern
 import scala.jdk.CollectionConverters.*
-object DescendingOrder:
-
   //This is the implementation for Functionality 4
   object LongestString:
     val logger = CreateLogger(classOf[DistributionCSV.type])

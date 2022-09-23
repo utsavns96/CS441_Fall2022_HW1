@@ -17,7 +17,7 @@ import org.apache.hadoop.mapred.RunningJob
 import org.apache.hadoop.mapred.jobcontrol.{Job, JobControl}
 
 import scala.language.postfixOps
-
+//Thsi is code for functionality 2
 object DescendingOrderofError:
   val logger = CreateLogger(classOf[DistributionCSV.type])
   logger.info(s"Starting LongestString - loading configs")
