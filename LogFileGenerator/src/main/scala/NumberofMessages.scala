@@ -30,7 +30,7 @@ object NumberofMessages :
     def map(key: LongWritable, value: Text, output: OutputCollector[Text, IntWritable], reporter: Reporter): Unit =
       val userdefinedpattern = Pattern.compile(funcconfig.getString("FindOccurrenceOf")).matcher(value.toString)
       if (userdefinedpattern.find())
-        logger.info(s"Found a string satisfying our regex constrains")
+        logger.debug(s"Found a string satisfying our regex constrains: "+userdefinedpattern.group())
         word.set(userdefinedpattern.group())
         output.collect(word, one)
 
@@ -39,7 +39,7 @@ object NumberofMessages :
     override def reduce(key: Text, values: util.Iterator[IntWritable], output: OutputCollector[Text, IntWritable], reporter: Reporter): Unit =
       //This reducer simply adds up all the values from the map.
       val sum = values.asScala.foldLeft(0)(_ + _.get)
-      logger.info(s"The sum for time interval and log message type= " + sum)
+      logger.debug(s"The sum for time interval and log message type= " + sum)
       output.collect(key, new IntWritable(sum))
   //@main
   def runNoOfMsg(inputPath: String, outputPath: String) =
