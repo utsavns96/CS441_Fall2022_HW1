@@ -9,10 +9,10 @@ Repo for the MapReduce homework-1 for CS411-Fall2022
 ## Requirements:
 
 In this homework, we have to use Map/Reduce to analyse logs and implement 4 major functionalities:
-1) Compute a spreadsheet or an CSV file that shows the distribution of different types of messages across predefined time intervals and injected string instances of the designated regex pattern for these log message types. This is implemented by **DistributionCSV.scala**
-2) Compute time intervals sorted in the descending order that contained most log messages of the type ERROR with injected regex pattern string instances. This is done via **DescendingOrderofError.scala**
-3) For each message type you will produce the number of the generated log messages. This is done through **NumberofMessages.scala**
-4) Produce the number of characters in each log message for each log message type that contain the highest number of characters in the detected instances of the designated regex pattern. This is implemented via **LongestString.scala**
+1) Compute a spreadsheet or an CSV file that shows the distribution of different types of messages across predefined time intervals and injected string instances of the designated regex pattern for these log message types. (This is implemented by **DistributionCSV.scala**)
+2) Compute time intervals sorted in the descending order that contained most log messages of the type ERROR with injected regex pattern string instances. (This is done via) **DescendingOrderofError.scala**
+3) For each message type you will produce the number of the generated log messages. (This is done through **NumberofMessages.scala**)
+4) Produce the number of characters in each log message for each log message type that contain the highest number of characters in the detected instances of the designated regex pattern. (This is implemented via **LongestString.scala**)
 
 Other Requirements:
 1) The output files should be in the format of .csv.
@@ -41,8 +41,8 @@ We will take a look at the detailed description of how each of these pieces of c
     In all cases, the value for the map is set to 1, since we are counting the number of occurrences at this step. 
 
     In the reducer _reduce()_, we simply add up all the inputs from the map. The output of this is a binary tab separated file by default, so we change our separator to ',' in the job configuration by setting `conf.set("mapred.textoutputformat.separator", ",")` in the method _mapred()_, which calls the map and reduce through configuring and running a job. To make things easier for us, the output file name is dynamically generated at runtime, and it appends the configuration _functionalityconfigs.mapreducetocsv.OutputPath_ from the application.conf file, + the current date and time in "dd-MM-yyyy-hh-mm-ss" format. This makes it so that the output directory path generated every time is unique, and the user does not have to delete previous folders for future runs. Lastly, we call a specialized helper function in `HelperUtils` called `ExtensionRenamer.changeExt` with the output path and the job name as the arguments. This renames the file from **part-00000** to the name of the job, and changes the extension to **.csv**.
-	
-	Sample Output:
+
+	**Sample Output:**
 
     | Key | Value |
     |-----|-------|
@@ -69,16 +69,74 @@ We will take a look at the detailed description of how each of these pieces of c
 	Now that we have the output of this map, we need to multiple our keys by -1 again to make them positive, and then swap them back to their original places. The output for this second map/reduce is placed in the folder DescendingOrderofError + the current date and time in "dd-MM-yyyy-hh-mm-ss" format \ finaloutput.
 	The two map/reduce jobs are run one after the other by simply calling them one after the other.
 	This however, does satisfy all our requirements, since these files are binary tab separated. To fix this, we set the separator to ',' in the map/reduce job configurations and run them through the specialized helper function in `HelperUtils` called `ExtensionRenamer.changeExt`, which we call twice - once for the unsorted output and the second time for the sorted output. This changes the extension of both files to **.csv**, which means that we have now met all requirements for this functionality.
+
+	**Sample Unsorted Output:**
+
+    | Key | Value |
+    |-----|-------|
+    | 14:35:00->ERROR | 1 |
+	| 14:36:00->ERROR | 3 |
+	| 14:37:00->ERROR | 4 |
+	| 14:38:00->ERROR | 7 |
+	| 14:39:00->ERROR | 5 |
+	| 14:40:00->ERROR | 7 |
+	| 14:41:00->ERROR | 9 |
+	| 14:42:00->ERROR | 2 |
+	| 14:43:00->ERROR | 8 |
+	| 14:44:00->ERROR | 3 |
+	| 14:45:00->ERROR | 3 |
+	| 14:46:00->ERROR | 1 |
+	
+	**Sample Sorted Output:**
+
+    | Key | Value |
+    |-----|-------|
+    | 14:41:00->ERROR| 9 |
+	| 14:43:00->ERROR| 8 |
+	| 14:40:00->ERROR| 7 |
+	| 14:38:00->ERROR| 7 |
+	| 14:39:00->ERROR| 5 |
+	| 14:37:00->ERROR| 4 |
+	| 14:45:00->ERROR| 3 |
+	| 14:44:00->ERROR| 3 |
+	| 14:36:00->ERROR| 3 |
+	| 14:42:00->ERROR| 2 |
+	| 14:46:00->ERROR| 1 |
+	| 14:35:00->ERROR| 1 |
+    
+    * The headers are not present in the actual output - they need to be added because markdown doesn't support tables without headers.
 	
 3) ### NumberofMessages.scala
 	Here, we take the path to the input log file and the output directory as arguments, and run the file through a simple map-reduce. The mapper method _map()_ takes the file and matches the strings with the log message type regular expression defined in `application.conf` under _functionalityconfigs.NumberofMsg.FindOccurrenceOf_.
 	If we find a match from the _.find()_, we get the matched value using the _group()_ method, and set that to the key. The value is set to 1. This is because we want to calculate the occurence of each message type, and setting the value of to 1 will allow us to add them all up in the reducer.
 	In the reducer _reduce()_, we sum up all the values to get the total number of occurences of each of the 4 log message types. As with the above 2 functionalities, the output is a binary tab separated file named **part-00000**, so we set `conf.set("mapred.textoutputformat.separator", ",")` and also run the file through `ExtensionRenamer.changeExt` in `HelperUtils` to change the name to the job name and the extension to .csv. We also dynamically generate the output subdirectory like in the above programs, by taking the name of the directory from _functionalityconfigs.NumberofMsg.OutputPath_ + the current date and time in "dd-MM-yyyy-hh-mm-ss" format.
 	
+	**Sample Output:**
+
+    | Key | Value |
+    |-----|-------|
+    | DEBUG | 70491 |
+    | ERROR | 163 |
+    | INFO | 84523 |
+    | WARN	| 3203 |
+
+    * The headers are not present in the actual output - they need to be added because markdown doesn't support tables without headers.
+	
 4) ### LongestString.scala
 	Like the other 3 functionalities described above, we start with the input path and output path as the input to our map/reduce. Here, we run the input file through the mapper _map()_, matching the input log string to the regular expressions that we fetch from `application.conf`, in the fields _functionalityconfigs.longeststring.FindOccurrenceOf_ and _randomLogGenerator.Pattern_. Once we get a match from our _.find()., the mapper creates a simple map of the log message type and the length of the injected regex string that we match.
 	This is then passed onto the reducer where we find the maximum of the values we get from the mapper, and finally print the largest to our output file. This file, like before, is a tab separated binary file which we first turn into comma separated with the line `conf.set("mapred.textoutputformat.separator", ",")`, and then after running the job, call `ExtensionRenamer.changeExt` from `HelperUtils` to change the filename to the job name and the extension to .csv.
+	
+	**Sample Output:**
 
+    | Key | Value |
+    |-----|-------|
+    | DEBUG | 30 |
+    | ERROR | 21 |
+    | INFO | 18 |
+    | WARN	|21 |
+
+    * The headers are not present in the actual output - they need to be added because markdown doesn't support tables without headers.
+	
 Other than these 4 files, we also have a main program called RunJobs.scala
 
 5) ### RunJobs.scala
