@@ -42,15 +42,29 @@ object DescendingOrderofError:
       //val matcheduserdefined = userdefinedpattern.matcher(value.toString)
       //If we find a string that satisfies the injected regex and is of the format we need (INFO/WARN/DEBUG/ERROR), we proceed to add it to our map output.
       if (injectedpattern.find() && userdefinedpattern.find()) {
-        logger.info(s"Found a string satisfying our regex constrains")
+        logger.debug(s"Found a string satisfying our regex constrains" + userdefinedpattern.group())
         //Here we need to calculate the time intervals
-        val time = value.toString.substring(0,8)
-        val second = value.toString.substring(6,8)
-        println("Time: "+time)
-        println("Second: "+second)
-        //if(second<59)
+        //val time = value.toString.substring(0,8)
+        //val second = value.toString.substring(6,8)
+        //println("Time: "+time)
+        //println("Second: "+second)
         //Setting the key as the the log message type
-        word.set(value.toString.substring(0, 5) + ":00->" + userdefinedpattern.group())
+        //word.set(value.toString.substring(0, 5) + ":00->" + userdefinedpattern.group())
+        if ((value.toString.substring(3, 5).toInt % funcconfig.getInt("TimeInterval")).equals(0)) {
+          logger.debug(s"Found a string with time matching our interval: " + value.toString.substring(0, 5))
+          word.set(value.toString.substring(0, 5) + ":00 " + userdefinedpattern.group())
+        } //else if the minute is between time intervals, we set key to the lower time interval
+        else if (value.toString.substring(3, 5).toInt > (value.toString.substring(3, 5)).toInt - (value.toString.substring(3, 5).toInt % funcconfig.getInt("TimeInterval")) && value.toString.substring(3, 5).toInt < (value.toString.substring(3, 5)).toInt - (value.toString.substring(3, 5).toInt % funcconfig.getInt("TimeInterval")) + funcconfig.getInt("TimeInterval"))
+          //This is the same as the if below:
+          //else if (minute > lowerboundinterval && minute < upperboundinterval)
+          logger.debug(s"Found a string between intervals: " + value.toString.substring(0, 5))
+          //if (value.toString.substring(3, 5).toInt >= (value.toString.substring(3, 4) + 0).toInt && value.toString.substring(3, 5).toInt < ((value.toString.substring(3, 4) + 0).toInt + funcconfig.getInt("TimeInterval")))
+          //group() method gives us the input subsequence matched by the above matcher()
+          word.set(value.toString.substring(0, 3) + (value.toString.substring(3, 5).toInt - (value.toString.substring(3, 5).toInt % funcconfig.getInt("TimeInterval"))) + ":00 " + userdefinedpattern.group())
+        else //else we set the key to the higher time interval.
+          logger.info(s"Found a string higher than the intervals: " + value.toString.substring(0, 5))
+          //word.set(value.toString.substring(0, 2) + ":" + ((value.toString.substring(3, 4) + 0).toInt + funcconfig.getInt("TimeInterval")) + ":00 " + userdefinedpattern.group())
+          word.set(value.toString.substring(0, 2) + ":" + ((value.toString.substring(3, 5)).toInt - (value.toString.substring(3, 5).toInt % funcconfig.getInt("TimeInterval")) + funcconfig.getInt("TimeInterval")) + ":00 " + userdefinedpattern.group())
         output.collect(word, one)
       }
 
