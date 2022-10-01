@@ -17,9 +17,15 @@ object TestCases
     test("Unit test for OutputPath"){
       //test if the config for OutputPath is present in the application.conf file
       val config: Config = ConfigFactory.load("application.conf")
-      val funcconfig = config.getConfig("randomLogGenerator.functionalityconfigs.longeststring")
-      val outputpath = funcconfig.getString("OutputPath")
-      assert(!outputpath.isEmpty)
+      val funcconfig_a = config.getConfig("randomLogGenerator.functionalityconfigs.longeststring")
+      val outputpath_a = funcconfig_a.getString("OutputPath")
+      val funcconfig_b = config.getConfig("randomLogGenerator.functionalityconfigs.mapreducetocsv")
+      val outputpath_b = funcconfig_b.getString("OutputPath")
+      val funcconfig_c = config.getConfig("randomLogGenerator.functionalityconfigs.descendingorder")
+      val outputpath_c = funcconfig_c.getString("OutputPath")
+      val funcconfig_d = config.getConfig("randomLogGenerator.functionalityconfigs.NumberofMsg")
+      val outputpath_d = funcconfig_d.getString("OutputPath")
+      assert(!outputpath_a.isEmpty && !outputpath_b.isEmpty && !outputpath_c.isEmpty && !outputpath_d.isEmpty)
     }
 
     test("Unit test for user defined regex positive") {
