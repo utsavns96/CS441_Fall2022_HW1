@@ -62,7 +62,7 @@ object DescendingOrderofError:
           //group() method gives us the input subsequence matched by the above matcher()
           word.set(value.toString.substring(0, 3) + (value.toString.substring(3, 5).toInt - (value.toString.substring(3, 5).toInt % funcconfig.getInt("TimeInterval"))) + ":00 " + userdefinedpattern.group())
         else //else we set the key to the higher time interval.
-          logger.info(s"Found a string higher than the intervals: " + value.toString.substring(0, 5))
+          logger.debug(s"Found a string higher than the intervals: " + value.toString.substring(0, 5))
           //word.set(value.toString.substring(0, 2) + ":" + ((value.toString.substring(3, 4) + 0).toInt + funcconfig.getInt("TimeInterval")) + ":00 " + userdefinedpattern.group())
           word.set(value.toString.substring(0, 2) + ":" + ((value.toString.substring(3, 5)).toInt - (value.toString.substring(3, 5).toInt % funcconfig.getInt("TimeInterval")) + funcconfig.getInt("TimeInterval")) + ":00 " + userdefinedpattern.group())
         output.collect(word, one)

@@ -30,3 +30,8 @@ libraryDependencies ++= Seq(
   "org.apache.hadoop" % "hadoop-mapreduce-client-jobclient" % "3.3.4",
   "org.scalatest" %% "scalatest" % "3.2.11" % Test
 )
+
+assemblyMergeStrategy in assembly := {
+ case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+ case x => MergeStrategy.first
+}

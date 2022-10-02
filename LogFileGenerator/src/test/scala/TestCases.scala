@@ -4,9 +4,17 @@ import org.scalatest.funsuite.AnyFunSuite
 import java.util.regex.Pattern
 import com.typesafe.config.{Config, ConfigFactory}
 import scala.runtime.stdLibPatches.Predef.assert
+import java.io.File
 
 object TestCases
   class TestCase extends AnyFunSuite:
+
+    test("Check if application.conf file is present") {
+      //Check if the application.conf file is present or not.
+      val file = File("src/main/resources/application.conf")
+      assert(file.exists())
+    }
+
     test("Unit test for config load") {
       //test if the config file loads or not
       val config: Config = ConfigFactory.load("application.conf")
@@ -61,3 +69,5 @@ object TestCases
       val injectedpattern = Pattern.compile(config.getString("randomLogGenerator.Pattern")).matcher(value.toString)
       assert(injectedpattern.find())
     }
+
+
