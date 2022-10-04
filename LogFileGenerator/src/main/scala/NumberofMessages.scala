@@ -48,7 +48,7 @@ object NumberofMessages :
     println(inputPath)
     val conf: JobConf = new JobConf(this.getClass)
     conf.setJobName("NumberofMsg")
-    conf.set("fs.defaultFS", "local")
+    //conf.set("fs.defaultFS", "local")
     conf.set("mapreduce.job.maps", "1")
     conf.set("mapreduce.job.reduces", "1")
     conf.setOutputKeyClass(classOf[Text])
@@ -61,7 +61,7 @@ object NumberofMessages :
     conf.set("mapred.textoutputformat.separator", ",")
     FileInputFormat.setInputPaths(conf, new Path(inputPath))
     //Creating a new time format to append to our output directory
-    var timeformat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss")
+    val timeformat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss")
     //Saves the trouble of having to delete the output directory again and again
     //specifically using a variable here to then pass it onto changeExt to rename the file.
     val outpath = outputPath + funcconfig.getString("OutputPath") + "_" + timeformat.format(Calendar.getInstance().getTime)

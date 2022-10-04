@@ -125,7 +125,7 @@ object DescendingOrderofError:
     //setting job parameters
     val conf = new JobConf(this.getClass)
     conf.setJobName("DescendingOrder")
-    conf.set("fs.defaultFS", "local")
+    //conf.set("fs.defaultFS", "local")
     conf.set("mapreduce.job.maps", "1")
     conf.set("mapreduce.job.reduces", "1")
     conf.setOutputKeyClass(classOf[Text])
@@ -138,12 +138,12 @@ object DescendingOrderofError:
     conf.setOutputFormat(classOf[TextOutputFormat[Text, IntWritable]])
     FileInputFormat.setInputPaths(conf, new Path(inputPath))
     //Creating a new time format to append to our output directory
-    var timeformat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss")
+    val timeformat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss")
     //Saves the trouble of having to delete the output directory again and again
     //Taking path as a variable here to that we can keep track of where this unsorted file went.
     //helps keep a more user friendly dir structure
     val outpath = outputPath + funcconfig.getString("OutputPath") + "_" + timeformat.format(Calendar.getInstance().getTime)
-    FileOutputFormat.setOutputPath(conf, new Path(outpath + "\\unsortedoutput"))
+    FileOutputFormat.setOutputPath(conf, new Path(outpath + "/unsortedoutput"))
     logger.info(s"Job configurations set. Starting job." + conf.getJobName)
     JobClient.runJob(conf)
 
@@ -151,7 +151,7 @@ object DescendingOrderofError:
     logger.info(s"The main job:" + conf.getJobName + " has ended successfully.")
     val conf2 = new JobConf(this.getClass)
     conf2.setJobName("SortingDescendingOrder")
-    conf2.set("fs.defaultFS", "local")
+    //conf2.set("fs.defaultFS", "local")
     conf2.set("mapreduce.job.maps", "1")
     conf2.set("mapreduce.job.reduces", "1")
     conf2.setMapOutputKeyClass(classOf[IntWritable])
@@ -164,13 +164,14 @@ object DescendingOrderofError:
     conf2.setInputFormat(classOf[TextInputFormat])
     conf2.set("mapred.textoutputformat.separator", ",")
     conf2.setOutputFormat(classOf[TextOutputFormat[Text, IntWritable]])
-    FileInputFormat.setInputPaths(conf2, new Path(outpath + "\\unsortedoutput\\part-00000"))
+    FileInputFormat.setInputPaths(conf2, new Path(outpath + "/unsortedoutput/"))
+    //FileInputFormat.setInputPaths(conf2, new Path(outpath + "/unsortedoutput/part-00000"))
     //Creating a new time format to append to our output directory
     //Saves the trouble of having to delete the output directory again and again
-    FileOutputFormat.setOutputPath(conf2, new Path(outpath + "\\finaloutput"))
+    FileOutputFormat.setOutputPath(conf2, new Path(outpath + "/finaloutput"))
     logger.info(s"Job configurations set. Starting job." + conf2.getJobName)
     JobClient.runJob(conf2)
-    ExtensionRenamer.changeExt(outpath+"\\unsortedoutput",conf.getJobName)
-    ExtensionRenamer.changeExt(outpath+"\\finaloutput",conf2.getJobName)
+    ExtensionRenamer.changeExt(outpath+"/unsortedoutput",conf.getJobName)
+    ExtensionRenamer.changeExt(outpath+"/finaloutput",conf2.getJobName)
 
 
