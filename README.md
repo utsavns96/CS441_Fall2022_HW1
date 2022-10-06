@@ -7,13 +7,17 @@ Repo for the MapReduce homework-1 for CS411-Fall2022
 
 ---
 
+AWS EMR Deployment video link: https://youtu.be/OgogHoK0vOI
+
+---
+
 ## Running the project
 1) Download the repo from git.
 2) Navigate to the LogGenerator directory.
 3) From the terminal, run `sbt clean compile`.
 4) From the terminal, run `sbt "run <input-path> <output-path>"` without the angular braces.
 5) To test, run `sbt test`.
-
+6) To create a .jar file, run the command `sbt assembly`. The resulting jar will be placed in __LogFileGenerator\target\scala-3.0.2__
 ---
 
 ## Requirements:
@@ -37,7 +41,7 @@ Other Requirements:
 
 ## Technical Design
 
-We will take a look at the detailed description of how each of these pieces of code work below:
+We will take a look at the detailed description of how each of these pieces of code work below. Line by line comments explaining every step are also added to the source code in this git repo.:
 
 1) ### RunJobs.scala
 	This is the main method that we call to run all our programs. It has been added to simplify the usage of the map/reduce programs, so that we don't have to call the 4 codes individually. It takes our input and output path, and uses them to call each of the 4 files one by one. It passes the input and output paths to the 'main' classes of the files in their arguments.
