@@ -33,9 +33,9 @@ Other Requirements:
 2) 5 or more scalatests should be implemented.
 3) Logging used for all programs.
 4) Configurable input and output paths for the map/reduce programs.
-5) Configurable control variables (Time intervals, Regular Expressions, etc)
-6) Compileable through sbt
-7) Deployed on AWS EMR
+5) Configurable control variables (Time intervals, Regular Expressions, etc).
+6) Compileable through sbt.
+7) Deployed on AWS EMR.
 
 ---
 
@@ -49,7 +49,7 @@ We will take a look at the detailed description of how each of these pieces of c
 2) ### DistributionCSV.scala
 
     This takes our input of the path of the input and output directories and runs our log file through the mapper method _map()_
-    In this, we first fetch the regular expression patterns that we need to match to from the `application.conf` file under the headers _functionalityconfigs.mapreducetocsv.FindOccurrenceOf_ and _randomLogGenerator.Pattern_ , and use the java.util.regex.Pattern library to perform our pattern matching using the _matcher()_ method.
+    In this, we first check if the string that we are working on begins with a timestamp or not. If not, we skip the string. In case it does, we then check if the timestamp lies between the ranges that we have specified in `application.conf` under _functionalityconfigs.mapreducetocsv.StartTime_ and _functionalityconfigs.mapreducetocsv.EndTime_. If this condition is satisfied, we fetch the regular expression patterns that we need to match to from the `application.conf` file under the headers _functionalityconfigs.mapreducetocsv.FindOccurrenceOf_ and _randomLogGenerator.Pattern_ , and use the java.util.regex.Pattern library to perform our pattern matching using the _matcher()_ method.
     We use _.find()_ to check if we have a successful match in the input string, and if that holds true for both the injected pattern and the user defined pattern, we proceed further.
     The next step is to calculate the time interval based on which we will be grouping our error messages. To do this, we first fetch the time interval defined in the `application.conf` file under _functionalityconfigs.mapreducetocsv.TimeInterval_, and then check if the modulus of the minute of the log message (substring(3,5)) and the time interval.
     If it is 0, it means that we are at a time interval, and that we can set the key of the map to the hour:minute(from the log message):00 + the matched pattern, which we get using the _.group()_ method that returns the substring matched by the _.matcher()_.
@@ -65,17 +65,45 @@ We will take a look at the detailed description of how each of these pieces of c
     | Key | Value |
     |-----|-------|
     | 14:35:00 DEBUG | 4 |
-    | 14:35:00 ERROR | 1 |
-    | 14:35:00 INFO |58 |
-    | 14:35:00 WARN	|23 |
-    | 14:36:00 DEBUG	|52 |
-    | 14:36:00 ERROR	|3 |
-    | 14:36:00 INFO	|360 |
-    | 14:36:00 WARN	|82 |
-    | 14:37:00 DEBUG	|46 |
-    | 14:37:00 ERROR	|4 |
+	| 14:35:00 ERROR |	1 |
+	| 14:35:00 INFO	| 58 |
+	| 14:35:00 WARN	| 23 |
+	| 14:36:00 DEBUG |	52 |
+	| 14:36:00 ERROR	| 3 |
+	| 14:36:00 INFO	| 360 |
+	| 14:36:00 WARN	| 82 |
+	| 14:37:00 DEBUG | 46 |
+	| 14:37:00 ERROR | 4 |
 	| 14:37:00 INFO	| 360 |
 	| 14:37:00 WARN	| 79 |
+	| 14:38:00 DEBUG | 51 |
+	| 14:38:00 ERROR | 7 |
+	| 14:38:00 INFO	| 323 |
+	| 14:38:00 WARN	| 99 |
+	| 14:39:00 DEBUG | 57 |
+	| 14:39:00 ERROR | 5 |
+	| 14:39:00 INFO	| 339 |
+	| 14:39:00 WARN	| 109 |
+	| 14:40:00 DEBUG | 55 |
+	| 14:40:00 ERROR | 7 |
+	| 14:40:00 INFO	| 343 |
+	| 14:40:00 WARN	| 83 |
+	| 14:41:00 DEBUG | 44 |
+	| 14:41:00 ERROR | 9 |
+	| 14:41:00 INFO	| 331 |
+	| 14:41:00 WARN	| 83 |
+	| 14:42:00 DEBUG | 51 |
+	| 14:42:00 ERROR | 2 |
+	| 14:42:00 INFO	| 350 |
+	| 14:42:00 WARN	| 92 |
+	| 14:43:00 DEBUG | 42 |
+	| 14:43:00 ERROR | 8 |
+	| 14:43:00 INFO	| 316 |
+	| 14:43:00 WARN	| 82 |
+	| 14:44:00 DEBUG | 45 |
+	| 14:44:00 ERROR | 3 |
+	| 14:44:00 INFO	| 348 |
+	| 14:44:00 WARN	| 88 |
     
     * The headers are not present in the actual output - they need to be added because markdown doesn't support tables without headers.
 
