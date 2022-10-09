@@ -188,7 +188,7 @@ We will take a look at the detailed description of how each of these pieces of c
     * The headers are not present in the actual output - they need to be added because markdown doesn't support tables without headers.
 	
 
-
+ _Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._
 ---
 
 ## Test Cases
