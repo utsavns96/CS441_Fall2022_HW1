@@ -106,6 +106,8 @@ We will take a look at the detailed description of how each of these pieces of c
 	| 14:44:00 WARN	| 88 |
     
     * The headers are not present in the actual output - they need to be added because markdown doesn't support tables without headers.
+   
+	  _Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._
 
 3) ### DescendingOrderofError.scala
 
@@ -155,7 +157,9 @@ We will take a look at the detailed description of how each of these pieces of c
 	| 14:35:00->ERROR| 1 |
     
     * The headers are not present in the actual output - they need to be added because markdown doesn't support tables without headers.
-	
+   
+	  _Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._	
+
 4) ### NumberofMessages.scala
 	Here, we take the path to the input log file and the output directory as arguments, and run the file through a simple map-reduce. The mapper method _map()_ takes the file and matches the strings with the log message type regular expression defined in `application.conf` under _functionalityconfigs.NumberofMsg.FindOccurrenceOf_.
 	If we find a match from the _.find()_, we get the matched value using the _group()_ method, and set that to the key. The value is set to 1. This is because we want to calculate the occurence of each message type, and setting the value of to 1 will allow us to add them all up in the reducer.
@@ -171,7 +175,9 @@ We will take a look at the detailed description of how each of these pieces of c
     | WARN	| 3203 |
 
     * The headers are not present in the actual output - they need to be added because markdown doesn't support tables without headers.
-	
+   
+	  _Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._	
+
 5) ### LongestString.scala
 	Like the other 3 functionalities described above, we start with the input path and output path as the input to our map/reduce. Here, we run the input file through the mapper _map()_, matching the input log string to the regular expressions that we fetch from `application.conf`, in the fields _functionalityconfigs.longeststring.FindOccurrenceOf_ and _randomLogGenerator.Pattern_. Once we get a match from our _.find()., the mapper creates a simple map of the log message type and the length of the injected regex string that we match.
 	This is then passed onto the reducer where we find the maximum of the values we get from the mapper, and finally print the largest to our output file. This file, like before, is a tab separated binary file which we first turn into comma separated with the line `conf.set("mapred.textoutputformat.separator", ",")`, and then after running the job, call `ExtensionRenamer.changeExt` from `HelperUtils` to change the filename to the job name and the extension to .csv.
@@ -186,9 +192,8 @@ We will take a look at the detailed description of how each of these pieces of c
     | WARN	|21 |
 
     * The headers are not present in the actual output - they need to be added because markdown doesn't support tables without headers.
-	
 
- _Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._
+   _Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._
 ---
 
 ## Test Cases
