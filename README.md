@@ -18,6 +18,10 @@ AWS EMR Deployment video link: https://youtu.be/OgogHoK0vOI
 4) From the terminal, run `sbt "run <input-path> <output-path>"` without the angular braces.
 5) To test, run `sbt test`.
 6) To create a .jar file, run the command `sbt assembly`. The resulting jar will be placed in __LogFileGenerator\target\scala-3.0.2__
+7) If you are using IntelliJ, import the project into the IDE, build it and create a `configuration` for RunJobs.scala. The arguments in this would be the input and output folder, separated by a <space>, i.e. `<input folder> <output folder>`.
+* Make sure that your local input/output folder has the requisite permissions to allow the program to read and write to it. These can be checked by right-clicking on the project directory and selecting _Properties_, then going to the _Security tab_, where you should see that the group `Users` has `Read` and `Write` permissions.
+* Make sure Hadoop is running on your machine before you run the program.
+
 ---
 
 ## Requirements:
@@ -62,52 +66,11 @@ We will take a look at the detailed description of how each of these pieces of c
 	
 	**Sample Output:**
 
-    | Key | Value |
-    |-----|-------|
-    | 14:35:00 DEBUG | 4 |
-	| 14:35:00 ERROR |	1 |
-	| 14:35:00 INFO	| 58 |
-	| 14:35:00 WARN	| 23 |
-	| 14:36:00 DEBUG |	52 |
-	| 14:36:00 ERROR	| 3 |
-	| 14:36:00 INFO	| 360 |
-	| 14:36:00 WARN	| 82 |
-	| 14:37:00 DEBUG | 46 |
-	| 14:37:00 ERROR | 4 |
-	| 14:37:00 INFO	| 360 |
-	| 14:37:00 WARN	| 79 |
-	| 14:38:00 DEBUG | 51 |
-	| 14:38:00 ERROR | 7 |
-	| 14:38:00 INFO	| 323 |
-	| 14:38:00 WARN	| 99 |
-	| 14:39:00 DEBUG | 57 |
-	| 14:39:00 ERROR | 5 |
-	| 14:39:00 INFO	| 339 |
-	| 14:39:00 WARN	| 109 |
-	| 14:40:00 DEBUG | 55 |
-	| 14:40:00 ERROR | 7 |
-	| 14:40:00 INFO	| 343 |
-	| 14:40:00 WARN	| 83 |
-	| 14:41:00 DEBUG | 44 |
-	| 14:41:00 ERROR | 9 |
-	| 14:41:00 INFO	| 331 |
-	| 14:41:00 WARN	| 83 |
-	| 14:42:00 DEBUG | 51 |
-	| 14:42:00 ERROR | 2 |
-	| 14:42:00 INFO	| 350 |
-	| 14:42:00 WARN	| 92 |
-	| 14:43:00 DEBUG | 42 |
-	| 14:43:00 ERROR | 8 |
-	| 14:43:00 INFO	| 316 |
-	| 14:43:00 WARN	| 82 |
-	| 14:44:00 DEBUG | 45 |
-	| 14:44:00 ERROR | 3 |
-	| 14:44:00 INFO	| 348 |
-	| 14:44:00 WARN	| 88 |
+	![img.png](img.png)
     
-    * The headers are not present in the actual output - they need to be added because markdown doesn't support tables without headers.
-   
-	  _Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._
+	Here, we have set the _functionalityconfigs.mapreducetocsv.StartTime_ to "14:35:00" and the _functionalityconfigs.mapreducetocsv.EndTime_ to "14:45:00". The _functionalityconfigs.mapreducetocsv.TimeInterval_ is set to 1, which means the messages between 14:35:00 and 14:45:00 are grouped by every minute. _functionalityconfigs.mapreducetocsv.FindOccurrenceOf_ is set to "(DEBUG)|(INFO)|(WARN)|(ERROR)", which lets us find the occurence of all the log message types. This can be changed in case only a particular type of log message is required in the output.
+
+	_Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._
 
 3) ### DescendingOrderofError.scala
 
@@ -122,43 +85,17 @@ We will take a look at the detailed description of how each of these pieces of c
 	
 	**Sample Unsorted Output:**
 
-    | Key | Value |
-    |-----|-------|
-    | 14:35:00->ERROR | 1 |
-	| 14:36:00->ERROR | 3 |
-	| 14:37:00->ERROR | 4 |
-	| 14:38:00->ERROR | 7 |
-	| 14:39:00->ERROR | 5 |
-	| 14:40:00->ERROR | 7 |
-	| 14:41:00->ERROR | 9 |
-	| 14:42:00->ERROR | 2 |
-	| 14:43:00->ERROR | 8 |
-	| 14:44:00->ERROR | 3 |
-	| 14:45:00->ERROR | 3 |
-	| 14:46:00->ERROR | 1 |
+	![img_1.png](img_1.png)
 	
 	<br><br>
 	
 	**Sample Sorted Output:**
 
-    | Key | Value |
-    |-----|-------|
-    | 14:41:00->ERROR| 9 |
-	| 14:43:00->ERROR| 8 |
-	| 14:40:00->ERROR| 7 |
-	| 14:38:00->ERROR| 7 |
-	| 14:39:00->ERROR| 5 |
-	| 14:37:00->ERROR| 4 |
-	| 14:45:00->ERROR| 3 |
-	| 14:44:00->ERROR| 3 |
-	| 14:36:00->ERROR| 3 |
-	| 14:42:00->ERROR| 2 |
-	| 14:46:00->ERROR| 1 |
-	| 14:35:00->ERROR| 1 |
+	![img_2.png](img_2.png)
     
-    * The headers are not present in the actual output - they need to be added because markdown doesn't support tables without headers.
-   
-	  _Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._	
+	For this output, we have set _functionalityconfigs.descendingorder.FindOccurrenceOf_ to "ERROR", and _functionalityconfigs.descendingorder.TimeInterval_ to 3, which gives us the number of ERROR messages in the log file, grouped every 3 minutes. 
+
+	_Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._	
 
 4) ### NumberofMessages.scala
 	Here, we take the path to the input log file and the output directory as arguments, and run the file through a simple map-reduce. The mapper method _map()_ takes the file and matches the strings with the log message type regular expression defined in `application.conf` under _functionalityconfigs.NumberofMsg.FindOccurrenceOf_.
@@ -167,16 +104,9 @@ We will take a look at the detailed description of how each of these pieces of c
 	<br><br>
 	**Sample Output:**
 
-    | Key | Value |
-    |-----|-------|
-    | DEBUG | 70491 |
-    | ERROR | 163 |
-    | INFO | 84523 |
-    | WARN	| 3203 |
+	![img_3.png](img_3.png)
 
-    * The headers are not present in the actual output - they need to be added because markdown doesn't support tables without headers.
-   
-	  _Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._	
+	_Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._	
 
 5) ### LongestString.scala
 	Like the other 3 functionalities described above, we start with the input path and output path as the input to our map/reduce. Here, we run the input file through the mapper _map()_, matching the input log string to the regular expressions that we fetch from `application.conf`, in the fields _functionalityconfigs.longeststring.FindOccurrenceOf_ and _randomLogGenerator.Pattern_. Once we get a match from our _.find()., the mapper creates a simple map of the log message type and the length of the injected regex string that we match.
@@ -184,19 +114,14 @@ We will take a look at the detailed description of how each of these pieces of c
 	<br><br>
 	**Sample Output:**
 
-    | Key | Value |
-    |-----|-------|
-    | DEBUG | 30 |
-    | ERROR | 21 |
-    | INFO | 18 |
-    | WARN	|21 |
+	![img_4.png](img_4.png)
 
-    * The headers are not present in the actual output - they need to be added because markdown doesn't support tables without headers.
+	_Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._
 
-   _Note - The functionality to turn the **part-00000** file to .csv works only when running locally through IntelliJ/sbt._
 ---
 
 ## Test Cases
+These are run through the command `sbt test`.
 
 | Case No. | Test Name                 | Test Steps                                                                                                                               | Expected Result                                            | Actual Result                                              | Pass/Fail |
 |----------|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------|-----------|
@@ -211,3 +136,13 @@ We will take a look at the detailed description of how each of these pieces of c
 | 9 | Unit Test for Log string starting with timestamp regex negative | (1.) Load the sample string <br> (2.) Load the timestamp substring from the value <br> (3.) Assert that the timestamp regular expression is not satisfied | The log string should successfuly be identified as not starting with a timestamp | The log string is successfuly identified as not starting with a timestamp | Pass |
 | 10 | Unit Test for timestamp between time window positive | (1.) Load config file application.conf <br> (2.) Load the functionality configs <br> (3.) load value to check for <br>(4.) Assert that the timestamp value specified lies between the start and end time that we fetch from the funcconfig | The timestamp should be correctly identified as lying between our time window | The timestamp is  correctly identified as lying between our time window | Pass |
 | 11 | Unit Test for timestamp between time window negative | (1.) Load config file application.conf <br> (2.) Load the functionality configs <br> (3.) load value to check for <br>(4.) Assert that the timestamp value specified does not lie between the start and end time that we fetch from the funcconfig | The timestamp should be correctly identified as lying outside our time window | The timestamp is correctly identified as lying outside our time window | Pass |
+
+---
+
+## Limitations:
+1) If the user is running the program locally, they must have Java 8 (or above), sbt 1.6 and Hadoop 3.x.x installed. 2
+2) The program can handle multiple files in the same input folder if the user wishes to split the file, but it cannot handle input files at different locations.
+3) The user must have the ability to grant Read/Write permissions to the group Users for the LogFileGenerator project folder. This usually requires Administrator access.
+4) The functionality for changing the name and extension of the output file works only when running locally (i.e., it does not change the name and extension in S3 when running the program on AWS EMR).
+
+
