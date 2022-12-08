@@ -3,7 +3,7 @@
 ### UIN: 665894994
 ### NetID: usharm4@uic.edu
 
-Repo for the MapReduce homework-1 for CS411-Fall2022
+Repo for the MapReduce homework-1 for CS441-Fall2022
 
 ---
 
